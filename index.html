@@ -11,32 +11,86 @@
 </header>
 
 <nav>
-  <button onclick="showNotice()">공지사항</button>
   <button onclick="showFree()">자유게시판</button>
 </nav>
 
-<main id="content">
-  게시판을 선택하세요
-</main>
+<main id="content"></main>
 
 <script>
-function showNotice() {
-  document.getElementById("content").innerHTML = `
-    <h2>공지사항</h2>
+function showFree() {
+  const posts = JSON.parse(localStorage.getItem("posts") || "[]");
+
+  let html = `
+    <h2>자유게시판</h2>
+    <button onclick="writePost()">✏️ 새 글</button>
     <ul>
-      <li><a href="post1.html">📌 첫 공지</a></li>
-    </ul>
+  `;
+
+  posts.forEach((post, i) => {
+    html += `<li onclick="viewPost(${i})">${post.title}</li>`;
+  });
+
+  html += "</ul>";
+  document.getElementById("content").innerHTML = html;
+}
+
+function writePost() {
+  document.getElementById("content").innerHTML = `
+    <h2>글쓰기</h2>
+    <input id="title" placeholder="제목"><br><br>
+    <textarea id="text" placeholder="내용"></textarea><br><br>
+    <input type="file" id="image"><br><br>
+    <button onclick="savePost()">저장</button>
   `;
 }
 
-function showFree() {
-  document.getElementById("content").innerHTML = `
-    <h2>자유게시판</h2>
-    <ul>
-      <li><a href="post2.html">안녕하세요!</a></li>
-    </ul>
-  `;
+function savePost() {
+  const title = document.getElementById("title").value;
+  const text = document.getElementById("text").value;
+  const file = document.getElementById("image").files[0];
+
+  const reader = new FileReader();
+
+  reader.onload = function() {
+    const image = reader.result;
+
+    const posts = JSON.parse(localStorage.getItem("posts") || "[]");
+    posts.push({ title, text, image });
+
+    localStorage.setItem("posts", JSON.stringify(posts));
+    showFree();
+  };
+
+  if (file) {
+    reader.readAsDataURL(file);
+  } else {
+    const posts = JSON.parse(localStorage.getItem("posts") || "[]");
+    posts.push({ title, text, image: "" });
+    localStorage.setItem("posts", JSON.stringify(posts));
+    showFree();
+  }
 }
+
+function viewPost(index) {
+  const posts = JSON.parse(localStorage.getItem("posts") || "[]");
+  const post = posts[index];
+
+  let html = `
+    <h2>${post.title}</h2>
+    <p>${post.text}</p>
+  `;
+
+  if (post.image) {
+    html += `<img src="${post.image}" style="max-width:300px;">`;
+  }
+
+  html += `<br><br><button onclick="showFree()">← 돌아가기</button>`;
+
+  document.getElementById("content").innerHTML = html;
+}
+
+// 처음 실행
+showFree();
 </script>
 
 </body>
