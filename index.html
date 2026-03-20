@@ -7,41 +7,64 @@
 <body>
 
 <header>
-  <h1>☕ 내 카페</h1>
+  <div class="logo">☕ 내 카페</div>
 </header>
 
-<nav>
-  <button onclick="showFree()">자유게시판</button>
-</nav>
+<div class="container">
+  <!-- 사이드바 -->
+  <aside>
+    <h3>📋 메뉴</h3>
+    <button onclick="showFree()">자유게시판</button>
+  </aside>
 
-<main id="content"></main>
+  <!-- 메인 -->
+  <main id="content"></main>
+</div>
 
 <script>
 function showFree() {
   const posts = JSON.parse(localStorage.getItem("posts") || "[]");
 
   let html = `
-    <h2>자유게시판</h2>
-    <button onclick="writePost()">✏️ 새 글</button>
-    <ul>
+    <div class="board-header">
+      <h2>자유게시판</h2>
+      <button onclick="writePost()">✏️ 글쓰기</button>
+    </div>
+    <div class="post-list">
   `;
 
-  posts.forEach((post, i) => {
-    html += `<li onclick="viewPost(${i})">${post.title}</li>`;
+  posts.reverse().forEach((post, i) => {
+    html += `
+      <div class="post-card" onclick="viewPost(${posts.length - 1 - i})">
+        ${post.image ? `<img src="${post.image}">` : ""}
+        <div class="post-title">${post.title}</div>
+      </div>
+    `;
   });
 
-  html += "</ul>";
+  html += "</div>";
   document.getElementById("content").innerHTML = html;
 }
 
 function writePost() {
   document.getElementById("content").innerHTML = `
-    <h2>글쓰기</h2>
-    <input id="title" placeholder="제목"><br><br>
-    <textarea id="text" placeholder="내용"></textarea><br><br>
-    <input type="file" id="image"><br><br>
-    <button onclick="savePost()">저장</button>
+    <div class="write-box">
+      <h2>글쓰기</h2>
+      <input id="title" placeholder="제목">
+      <textarea id="text" placeholder="내용"></textarea>
+      <input type="file" id="image" onchange="previewImage(event)">
+      <img id="preview">
+      <button onclick="savePost()">등록</button>
+    </div>
   `;
+}
+
+function previewImage(event) {
+  const reader = new FileReader();
+  reader.onload = function() {
+    document.getElementById("preview").src = reader.result;
+  };
+  reader.readAsDataURL(event.target.files[0]);
 }
 
 function savePost() {
@@ -53,10 +76,8 @@ function savePost() {
 
   reader.onload = function() {
     const image = reader.result;
-
     const posts = JSON.parse(localStorage.getItem("posts") || "[]");
     posts.push({ title, text, image });
-
     localStorage.setItem("posts", JSON.stringify(posts));
     showFree();
   };
@@ -76,20 +97,20 @@ function viewPost(index) {
   const post = posts[index];
 
   let html = `
-    <h2>${post.title}</h2>
-    <p>${post.text}</p>
+    <div class="post-view">
+      <h2>${post.title}</h2>
+      <p>${post.text}</p>
   `;
 
   if (post.image) {
-    html += `<img src="${post.image}" style="max-width:300px;">`;
+    html += `<img src="${post.image}" class="view-img">`;
   }
 
-  html += `<br><br><button onclick="showFree()">← 돌아가기</button>`;
+  html += `<button onclick="showFree()">← 목록</button></div>`;
 
   document.getElementById("content").innerHTML = html;
 }
 
-// 처음 실행
 showFree();
 </script>
 
