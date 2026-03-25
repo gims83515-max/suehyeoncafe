@@ -1,97 +1,42 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-  <title>내 카페</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>김수현 찬양</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+
+      /* 무지개 배경 */
+      background: linear-gradient(
+        90deg,
+        red, orange, yellow, green, blue, indigo, violet
+      );
+      background-size: 400% 400%;
+      animation: rainbow 10s infinite;
+    }
+
+    /* 애니메이션 */
+    @keyframes rainbow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .text {
+      font-size: 40px;
+      font-weight: bold;
+      color: white;
+      text-shadow: 2px 2px 5px black;
+    }
+  </style>
 </head>
 <body>
-
-<header>
-  <h1>☕ 내 카페</h1>
-</header>
-
-<nav>
-  <button onclick="showFree()">자유게시판</button>
-</nav>
-
-<main id="content"></main>
-
-<script>
-function showFree() {
-  const posts = JSON.parse(localStorage.getItem("posts") || "[]");
-
-  let html = `
-    <h2>자유게시판</h2>
-    <button onclick="writePost()">✏️ 새 글</button>
-    <ul>
-  `;
-
-  posts.forEach((post, i) => {
-    html += `<li onclick="viewPost(${i})">${post.title}</li>`;
-  });
-
-  html += "</ul>";
-  document.getElementById("content").innerHTML = html;
-}
-
-function writePost() {
-  document.getElementById("content").innerHTML = `
-    <h2>글쓰기</h2>
-    <input id="title" placeholder="제목"><br><br>
-    <textarea id="text" placeholder="내용"></textarea><br><br>
-    <input type="file" id="image"><br><br>
-    <button onclick="savePost()">저장</button>
-  `;
-}
-
-function savePost() {
-  const title = document.getElementById("title").value;
-  const text = document.getElementById("text").value;
-  const file = document.getElementById("image").files[0];
-
-  const reader = new FileReader();
-
-  reader.onload = function() {
-    const image = reader.result;
-
-    const posts = JSON.parse(localStorage.getItem("posts") || "[]");
-    posts.push({ title, text, image });
-
-    localStorage.setItem("posts", JSON.stringify(posts));
-    showFree();
-  };
-
-  if (file) {
-    reader.readAsDataURL(file);
-  } else {
-    const posts = JSON.parse(localStorage.getItem("posts") || "[]");
-    posts.push({ title, text, image: "" });
-    localStorage.setItem("posts", JSON.stringify(posts));
-    showFree();
-  }
-}
-
-function viewPost(index) {
-  const posts = JSON.parse(localStorage.getItem("posts") || "[]");
-  const post = posts[index];
-
-  let html = `
-    <h2>${post.title}</h2>
-    <p>${post.text}</p>
-  `;
-
-  if (post.image) {
-    html += `<img src="${post.image}" style="max-width:300px;">`;
-  }
-
-  html += `<br><br><button onclick="showFree()">← 돌아가기</button>`;
-
-  document.getElementById("content").innerHTML = html;
-}
-
-// 처음 실행
-showFree();
-</script>
-
+  <div class="text">김수현을 찬양해라</div>
 </body>
 </html>
